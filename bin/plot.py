@@ -131,7 +131,8 @@ def main(options):
 # =========================== helpers =========================================
 
 def str_global_stats(global_stats):
-    return "Number of nodes : %d   Number of runs : %d" % (global_stats['nbr_motes'], global_stats['nbr_runs'])
+    return "Number of nodes : %d   Number of runs : %d (%d converged)"\
+           % (global_stats['nbr_motes'], global_stats['nbr_runs'], len(global_stats['convergence_times']))
 
 
 def write_additional_stats(output_folder, s, filename="add_stats.txt"):
@@ -143,7 +144,10 @@ def write_additional_stats(output_folder, s, filename="add_stats.txt"):
 
 def plot_phase_times_boxplots(phase_times, global_stats, subfolder):
     conv_times = global_stats['convergence_times']
-    mean_conv_time = float(sum(conv_times)) / len(conv_times)
+    if len(conv_times) > 0:
+        mean_conv_time = float(sum(conv_times)) / len(conv_times)
+    else:
+        mean_conv_time = 0
     stat_names = ['sync_time_s', 'join_time_s', 'joinRPL_time_s']
     labels = {stat_names[0]: 'Synchro',
               stat_names[1]: 'SecJoin',

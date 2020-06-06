@@ -96,8 +96,6 @@ def kpis_all(inputfile):
             mote_id = logline['_mote_id']
 
         # populate
-        if run_id not in convergence_times:
-            convergence_times[run_id] = {}
         if run_id not in allstats:
             allstats[run_id] = {}
         if (
