@@ -31,7 +31,7 @@ import SimEngine
 
 # TODO : move constants on the right place of code
 
-DELAY_LOG_AFTER_EB = 120
+DELAY_LOG_AFTER_EB = 200
 
 
 class Tsch(object):
