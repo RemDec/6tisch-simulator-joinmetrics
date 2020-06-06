@@ -132,6 +132,13 @@ def str_global_stats(global_stats):
     return "Number of nodes : %d   Number of runs : %d" % (global_stats['nbr_motes'], global_stats['nbr_runs'])
 
 
+def write_additional_stats(output_folder, s, filename="add_stats.txt"):
+    if not os.path.isdir(output_folder):
+        os.makedirs(output_folder)
+    with open(output_folder+'/'+filename, 'a+') as f:
+        f.write(s)
+
+
 def plot_phase_times_boxplots(phase_times, global_stats, subfolder):
     conv_times = global_stats['convergence_times']
     mean_conv_time = float(sum(conv_times)) / len(conv_times)
@@ -145,11 +152,15 @@ def plot_phase_times_boxplots(phase_times, global_stats, subfolder):
         data['value'].extend(vals)
 
     df = pd.DataFrame(data)
+    stats_join_steps = df.groupby('phase').describe().to_string()
+    stats_write = "--- Time elapsed at steps of join process - " + str_global_stats(global_stats) + '\n' +\
+                  stats_join_steps + '\n\n'
+    write_additional_stats(subfolder, stats_write)
     ax = sns.boxplot(y='phase', x='value', data=data, orient='h', linewidth=1,
                      order=[labels[t] for t in stat_names[::-1]],
                      palette=['OrangeRed', 'Orange', 'Gold'],
                      notch=False, meanline=True, showmeans=True)
-    ax.set_title("Time elapsed between steps of join process for all nodes\n"+str_global_stats(global_stats))
+    ax.set_title("Time elapsed at steps of join process for all nodes\n"+str_global_stats(global_stats))
     # x axis
     ax.set_xlabel("Time (s)")
     # Set a vertical line for mean convergence time
@@ -171,11 +182,15 @@ def plot_phase_charges_boxplots(phase_charges, global_stats, subfolder):
         data['value'].extend(map(lambda microC: microC/1000, vals))
 
     df = pd.DataFrame(data)
+    stats_join_steps = df.groupby('phase').describe().to_string()
+    stats_write = "--- Charge consumed at steps of join process - " + str_global_stats(global_stats) + '\n' +\
+                  stats_join_steps + '\n\n'
+    write_additional_stats(subfolder, stats_write)
     ax = sns.boxplot(y='phase', x='value', data=data, orient='h', linewidth=1,
                      palette=['Tomato', 'OrangeRed', 'Orange', 'Gold'],
                      order=[labels[t] for t in stat_names[::-1]],
                      notch=False, meanline=True, showmeans=True)
-    ax.set_title("Charge consumed between steps of join process for all nodes\n"+str_global_stats(global_stats))
+    ax.set_title("Charge consumed at steps of join process for all nodes\n"+str_global_stats(global_stats))
     # x axis
     ax.set_xlabel("Charge (mC)")
 
@@ -194,6 +209,7 @@ def plot_histogram_hops(data, global_stats, subfolder):
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
         ax.grid(axis="y")
         # x axis
+        ax.set_xlabel("Number of hops")
         ax.set_xticks(list(set(values)))
         ax.set_xlim(left=min(values)-0.5, right=max(values)+0.5)
         ax.xaxis.set_tick_params(which='minor', bottom=False)
