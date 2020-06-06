@@ -94,7 +94,9 @@ def main(options):
                 conv_times = []
                 for run in kpis.values():
                     nbr_runs += 1
-                    conv_times.append(run['global-stats']['convergence_time'])
+                    convergence_time = run['global-stats']['convergence_time']
+                    if convergence_time != 'N/A':
+                        conv_times.append(convergence_time)
                     nbr_motes = 1  # Root is excluded from logs, add it artificially
                     for mote in run.values():
                         if key in mote:
